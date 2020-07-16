@@ -9,6 +9,7 @@ import requests
 
 class Transaction:
     def __init__(self, from_address, to_address, amount):
+        self.check_arguments(from_address, to_address, amount)
         self.id = str(uuid4())
         self.fromAddress = from_address
         self.toAddress = to_address
@@ -18,9 +19,22 @@ class Transaction:
     def __repr__(self):
         return "Transaction " + self.id
 
+    def check_arguments(self, from_address, to_address, amount):
+        if not to_address:
+            raise Exception("Transaction must have a destination address")
+
+        # What type should from and to address be? How do we define public keys?
+        # TODO - Add from and to address type checks
+
+        # What type we want amount to be? Probably not int
+        # TODO - Add amount type check
+
+        if amount < 0:
+            raise Exception("Transaction amount must be greater or equal than 0")
+
     def calculate_hash(self):
         t_hash = SHA256.new()
-        t_hash.update("self.id + self.fromAddress + self.toAddress + str(self.amount)".encode())
+        t_hash.update(self.transaction_content().encode())
         return t_hash
 
     def sign_transaction(self, node_id):
@@ -32,10 +46,16 @@ class Transaction:
             return False
 
         h = SHA256.new()
-        h.update("self.id + self.fromAddress + self.toAddress + str(self.amount)".encode())
-        verify_sig(h, self.signature, node_id)  # Throws error if signature is invalid
+        h.update(self.transaction_content().encode())
+        try:
+            verify_sig(h, self.signature, node_id)  # Throws error if signature is invalid
+        except Exception:
+            return False
+
         return True
 
+    def transaction_content(self):
+        return "" + self.id + self.fromAddress + self.toAddress + str(self.amount)
 
 class Block:
 

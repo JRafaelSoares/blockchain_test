@@ -1,6 +1,6 @@
 from Crypto.PublicKey import RSA
 from Crypto.Signature.pkcs1_15 import PKCS115_SigScheme
-
+import os
 
 def generate_key_pair(node_id):
 
@@ -22,12 +22,18 @@ def sign_hash(h, node_id):
     priv_key = RSA.import_key(f.read())  # Read private key from file
     signer = PKCS115_SigScheme(priv_key)
     signature = signer.sign(h)
+    f.close()
     return signature
 
 
 def verify_sig(hc, signature, node_id):
     file_pub = str(node_id) + "-public.pem"
+    if not os.path.exists(file_pub):
+        raise Exception("Public key does not exist")
     f = open(file_pub, 'r')
     pub_key = RSA.import_key(f.read())  # Read public key from file
+    f.close()
     signer = PKCS115_SigScheme(pub_key)
     signer.verify(hc, signature)
+
+
