@@ -47,6 +47,8 @@ class Transaction:
 
         h = SHA256.new()
         h.update(self.transaction_content().encode())
+
+        # TODO - Add more explicit Exceptions
         try:
             verify_sig(h, self.signature, node_id)  # Throws error if signature is invalid
         except Exception:
@@ -55,7 +57,7 @@ class Transaction:
         return True
 
     def transaction_content(self):
-        return "" + self.id + self.fromAddress + self.toAddress + str(self.amount)
+        return "{}{}{}{}".format(self.id, self.fromAddress, self.toAddress, self.amount)
 
 class Block:
 
