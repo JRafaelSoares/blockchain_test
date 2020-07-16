@@ -61,6 +61,11 @@ class TestTransactionClass(unittest.TestCase):
         transaction.amount = 2
         self.assertFalse(transaction.check_valid(self.node_identifier))
 
+    def test_integrity_modified_signature(self):
+        transaction = self.get_correct_transaction()
+        transaction.signature = bytes('test', encoding='utf-8')
+        self.assertFalse(transaction.check_valid(self.node_identifier))
+
     # ------------------------------------ #
     # ----------- Aux Function ----------- #
     # ------------------------------------ #
