@@ -62,21 +62,21 @@ class Transaction:
 
 class Block:
 
-    def __init__(self, timestamp, transactions, index):
-        self.check_arguments(timestamp, transactions, index)
+    def __init__(self, timestamp, transactions, index, previous_hash=""):
+        self.check_arguments(timestamp, transactions, index, previous_hash)
         self.timestamp = timestamp
         self.transactions = transactions
         self.index = index
-        self.previousHash = ""
+        self.previousHash = previous_hash
         self.currentHash = ""
         self.nonce = 0
 
     def __repr__(self):
         return self.timestamp + self.transactions + "Previous hash: " + self.previousHash + self.currentHash
 
-    def check_arguments(self, timestamp, transactions, index):
+    def check_arguments(self, timestamp, transactions, index, previous_hash):
         if not timestamp or not transactions:
-            raise Exception("Block must have a timestamp and one or more transactions")
+            raise Exception("Block must have a timestamp, one or more transactions and the previous block hash")
 
         # TODO - Timestamp check fails when using datetime.now, find the correct type
         # if not isinstance(timestamp, type(datetime.now)):
@@ -89,6 +89,9 @@ class Block:
             self.has_valid_transactions(transactions)
         except:
             raise Exception("Invalid Transactions")
+
+        # TODO - Add check for previous hash to be empty only for first block
+
 
     def calculate_hash(self):
         b_hash = SHA256.new()
@@ -166,8 +169,7 @@ class Blockchain:
         latest_block_index = self.get_latest_block().index + 1
         block_trans = self.pending_transactions.copy()
         block = Block(datetime.now(), block_trans,
-                      latest_block_index)  # Not possible to do it like this in real blockchains
-        block.previousHash = self.get_latest_block().currentHash
+                      latest_block_index, self.get_latest_block().currentHash)
         block.mine_block(self.difficulty)
 
         print("Block successfully mined: ", block.currentHash)

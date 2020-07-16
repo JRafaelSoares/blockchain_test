@@ -3,6 +3,7 @@ from datetime import datetime
 from blockchain.blockchain_data_structure import Block
 from blockchain.blockchain_data_structure import Transaction
 from crypto.keygen import generate_key_pair
+from Crypto.Hash import SHA256
 
 # --------------------------------------- #
 # ----------- Variable Values ----------- #
@@ -13,6 +14,9 @@ from_address = "from_address"
 to_address = "to_address"
 amount = 1
 transaction = Transaction(from_address, to_address, amount, node_identifier)
+b_hash = SHA256.new()
+b_hash.update("test".encode())
+previous_hash = b_hash.hexdigest()
 
 class TestBlockClass(unittest.TestCase):
 
@@ -46,13 +50,58 @@ class TestBlockClass(unittest.TestCase):
         with self.assertRaises(Exception):
             Block(datetime.now(), [transaction, None], 0)
 
-    # ------------------------------------ #
-    # ----------- Aux Function ----------- #
-    # ------------------------------------ #
+    # --------------------------------------- #
+    # ----------- Integrity Tests ----------- #
+    # --------------------------------------- #
 
-    # Returns a correctly made and signed transaction
-    def get_correct_transaction(self):
-        return Transaction(from_address, to_address, amount, node_identifier)
+    def test_integrity_modified_timestamp(self):
+        timestamp = datetime.now
+        block = Block(timestamp, transaction, 0)
+        block.mine_block(2)
+        block.timestamp = datetime.now()
+        self.assertNotEqual(block.currentHash, block.calculate_hash())
+
+    def test_integrity_modified_transaction_null(self):
+        timestamp = datetime.now
+        block = Block(timestamp, Transaction(from_address, to_address, amount, node_identifier), 0)
+        block.mine_block(2)
+        block.transactions = None
+        self.assertNotEqual(block.currentHash, block.calculate_hash())
+
+    def test_integrity_modified_transaction_list(self):
+        timestamp = datetime.now
+        block = Block(timestamp, [transaction, Transaction(from_address, to_address, amount, node_identifier)], 0)
+        block.mine_block(2)
+        block.transactions[1] = None
+        self.assertNotEqual(block.currentHash, block.calculate_hash())
+
+    def test_integrity_modified_transaction_list_null(self):
+        timestamp = datetime.now
+        block = Block(timestamp, [transaction, Transaction(from_address, to_address, amount, node_identifier)], 0)
+        block.mine_block(2)
+        block.transactions = None
+        self.assertNotEqual(block.currentHash, block.calculate_hash())
+
+    def test_integrity_modified_index(self):
+        timestamp = datetime.now
+        block = Block(timestamp, transaction, 0)
+        block.mine_block(2)
+        block.index = -1
+        self.assertNotEqual(block.currentHash, block.calculate_hash())
+
+    def test_integrity_modified_previous_hash(self):
+        timestamp = datetime.now
+        block = Block(timestamp, transaction, 0, previous_hash)
+        block.mine_block(2)
+        block.previousHash = "wrongHash"
+        self.assertNotEqual(block.currentHash, block.calculate_hash())
+
+    def test_integrity_modified_nonce(self):
+        timestamp = datetime.now
+        block = Block(timestamp, transaction, 0, previous_hash)
+        block.mine_block(2)
+        block.nonce = -1    # Pray it doesnt it the correct nonce...
+        self.assertNotEqual(block.currentHash, block.calculate_hash())
 
 
 if __name__ == '__main__':
