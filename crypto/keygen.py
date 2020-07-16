@@ -18,6 +18,8 @@ def generate_key_pair(node_id):
 
 def sign_hash(h, node_id):
     file_priv = str(node_id) + "-private.pem"
+    if not os.path.exists(file_priv):
+        return None
     f = open(file_priv, 'r')
     priv_key = RSA.import_key(f.read())  # Read private key from file
     signer = PKCS115_SigScheme(priv_key)

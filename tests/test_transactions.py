@@ -2,13 +2,18 @@ import unittest
 from blockchain.blockchain_data_structure import Transaction
 from crypto.keygen import generate_key_pair
 
+# --------------------------------------- #
+# ----------- Variable Values ----------- #
+# --------------------------------------- #
+
+node_identifier = "test"
+from_address = "from_address"
+to_address = "to_address"
+amount = 1
+
 class TestTransactionClass(unittest.TestCase):
 
-    # Should we use constants to better represent tests or global variables for correct cases ?
-    node_identifier = "test"
-    from_address = "from_address"
-    to_address = "to_address"
-    amount = 1
+
     generate_key_pair(node_identifier)
 
     # ------------------------------------- #
@@ -16,22 +21,26 @@ class TestTransactionClass(unittest.TestCase):
     # ------------------------------------- #
 
     def test_constructor_correct(self):
-        transaction = Transaction("from_address", "to_address", 1)
-        self.assertEqual(transaction.fromAddress, "from_address")
-        self.assertEqual(transaction.toAddress, "to_address")
-        self.assertEqual(transaction.amount, 1)
+        transaction = Transaction(from_address, to_address, amount, node_identifier)
+        self.assertEqual(transaction.fromAddress, from_address)
+        self.assertEqual(transaction.toAddress, to_address)
+        self.assertEqual(transaction.amount, amount)
 
     def test_constructor_null_to_address(self):
         with self.assertRaises(Exception):
-            Transaction("from_address", None, 1)
+            Transaction(from_address, None, amount, node_identifier)
 
     def test_constructor_negative_amount(self):
         with self.assertRaises(Exception):
-            Transaction("from_address", "to_address", -1)
+            Transaction(from_address, to_address, -1, node_identifier)
 
     def test_constructor_none_amount(self):
         with self.assertRaises(Exception):
-            Transaction("from_address", "to_address", None)
+            Transaction(from_address, to_address, None, node_identifier)
+
+    def test_constructor_none_node_id(self):
+        with self.assertRaises(Exception):
+            Transaction(from_address, to_address, amount, None)
 
     # TODO - Add to and from address type check test
     # TODO - Add amount type check test
@@ -40,42 +49,37 @@ class TestTransactionClass(unittest.TestCase):
     # ----------- Integrity Tests ----------- #
     # --------------------------------------- #
 
-    # TODO - How to test if hashing is correct in itself
+    # TODO - Can we test if hash/signature itself is correct?
 
     def test_integrity_modified_id(self):
-        transaction = self.get_correct_transaction()
-        self.assertFalse(transaction.check_valid("fake_id"))
+        transaction = Transaction(from_address, to_address, amount, node_identifier)
+        transaction.id = "fake_id"
+        self.assertFalse(transaction.check_valid())
 
     def test_integrity_modified_from_address(self):
-        transaction = self.get_correct_transaction()
+        transaction = Transaction(from_address, to_address, amount, node_identifier)
         transaction.fromAddress = "fake_from_address"
-        self.assertFalse(transaction.check_valid(self.node_identifier))
+        self.assertFalse(transaction.check_valid())
 
     def test_integrity_modified_to_address(self):
-        transaction = self.get_correct_transaction()
+        transaction = Transaction(from_address, to_address, amount, node_identifier)
         transaction.toAddress = "fake_to_address"
-        self.assertFalse(transaction.check_valid(self.node_identifier))
+        self.assertFalse(transaction.check_valid())
 
     def test_integrity_modified_amount(self):
-        transaction = self.get_correct_transaction()
+        transaction = Transaction(from_address, to_address, amount, node_identifier)
         transaction.amount = 2
-        self.assertFalse(transaction.check_valid(self.node_identifier))
+        self.assertFalse(transaction.check_valid())
+
+    def test_integrity_modified_node_id(self):
+        transaction = Transaction(from_address, to_address, amount, node_identifier)
+        transaction.node_id = "test2"
+        self.assertFalse(transaction.check_valid())
 
     def test_integrity_modified_signature(self):
-        transaction = self.get_correct_transaction()
+        transaction = Transaction(from_address, to_address, amount, node_identifier)
         transaction.signature = bytes('test', encoding='utf-8')
-        self.assertFalse(transaction.check_valid(self.node_identifier))
-
-    # ------------------------------------ #
-    # ----------- Aux Function ----------- #
-    # ------------------------------------ #
-
-    # Returns a correctly made and signed transaction
-    def get_correct_transaction(self):
-        transaction = Transaction("from_address", "to_address", 1)
-        transaction.sign_transaction(self.node_identifier)
-        return transaction
-
+        self.assertFalse(transaction.check_valid())
 
 if __name__ == '__main__':
     unittest.main()
