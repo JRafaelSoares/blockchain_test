@@ -52,6 +52,7 @@ class Transaction:
         try:
             verify_sig(h, self.signature, self.node_id)  # Throws error if signature is invalid
         except Exception:
+            print("Signature failed, integrity and/or signature value was not upheld")
             return False
 
         return True
