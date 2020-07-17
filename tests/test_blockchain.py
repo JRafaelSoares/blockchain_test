@@ -122,6 +122,24 @@ class TestBlockchainClass(unittest.TestCase):
     # ----------- Balance Tests ----------- #
     # ------------------------------------- #
 
+    def test_address_balance(self):
+        blockchain = Blockchain(miner_address, node_identifier, host, port)
+
+        for transactions in range(blockchain.number_of_transactions * 2):
+            blockchain.create_transaction(from_address, to_address, amount)
+
+        self.assertEqual(blockchain.get_balance(from_address), -(amount * blockchain.number_of_transactions))
+        self.assertEqual(blockchain.get_balance(to_address), amount * blockchain.number_of_transactions)
+
+    def test_address_balance_miner_address(self):
+        blockchain = Blockchain(miner_address, node_identifier, host, port)
+
+        for transactions in range(blockchain.number_of_transactions):
+            blockchain.create_transaction(from_address, to_address, amount)
+
+        self.assertEqual(blockchain.get_balance(from_address), -(amount * blockchain.number_of_transactions * 2 - 1))
+        self.assertEqual(blockchain.get_balance(to_address), amount * blockchain.number_of_transactions * 2 - 1)
+        self.assertEqual(blockchain.get_balance(miner_address), blockchain.miningReward)
 
 
 if __name__ == '__main__':
