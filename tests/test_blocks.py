@@ -20,13 +20,11 @@ transaction = Transaction(from_address, to_address, amount, node_identifier)
 
 incorrect_transaction = Transaction(from_address, to_address, amount, node_identifier)
 incorrect_transaction.amount = -1.0
-
 b_hash = SHA256.new()
 b_hash.update("test".encode())
 previous_hash = b_hash.hexdigest()
 
 class TestBlockClass(unittest.TestCase):
-
 
     # ------------------------------------- #
     # --------- Constructor Tests --------- #

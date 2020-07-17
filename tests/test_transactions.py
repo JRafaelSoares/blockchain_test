@@ -15,7 +15,6 @@ amount = 1.0
 class TestTransactionClass(unittest.TestCase):
 
 
-
     # ------------------------------------- #
     # --------- Constructor Tests --------- #
     # ------------------------------------- #

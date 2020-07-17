@@ -42,3 +42,4 @@ def verify_sig(hc, signature, node_id):
         raise Exception("Signature failed, integrity and/or signature value was not upheld")
 
 
+

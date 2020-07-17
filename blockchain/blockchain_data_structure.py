@@ -47,8 +47,8 @@ class Transaction:
             return False
 
         try:
-            verify_sig(self.calculate_hash(), self.signature, self.node_id)  # Throws error if signature is invalid
-
+            verify_sig(h, self.signature, self.node_id)  # Throws error if signature is invalid
+        
         except:
             print("Signature failed, integrity and/or signature value was not upheld")
             return False
