@@ -125,7 +125,7 @@ class TestBlockchainClass(unittest.TestCase):
     def test_address_balance(self):
         blockchain = Blockchain(miner_address, node_identifier, host, port)
 
-        for transactions in range(blockchain.number_of_transactions * 2):
+        for transactions in range(blockchain.number_of_transactions):
             blockchain.create_transaction(from_address, to_address, amount)
 
         self.assertEqual(blockchain.get_balance(from_address), -(amount * blockchain.number_of_transactions))
@@ -134,7 +134,7 @@ class TestBlockchainClass(unittest.TestCase):
     def test_address_balance_miner_address(self):
         blockchain = Blockchain(miner_address, node_identifier, host, port)
 
-        for transactions in range(blockchain.number_of_transactions):
+        for transactions in range(blockchain.number_of_transactions * 2):
             blockchain.create_transaction(from_address, to_address, amount)
 
         self.assertEqual(blockchain.get_balance(from_address), -(amount * blockchain.number_of_transactions * 2 - 1))
