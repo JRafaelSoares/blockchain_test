@@ -32,7 +32,11 @@ class TestTransactionClass(unittest.TestCase):
 
     def test_constructor_negative_amount(self):
         with self.assertRaises(Exception):
-            Transaction(from_address, to_address, -1, node_identifier)
+            Transaction(from_address, to_address, -1.0, node_identifier)
+
+    def test_constructor_non_float_amount(self):
+        with self.assertRaises(Exception):
+            Transaction(from_address, to_address, 2, node_identifier)
 
     def test_constructor_none_amount(self):
         with self.assertRaises(Exception):
