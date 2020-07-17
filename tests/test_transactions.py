@@ -9,7 +9,7 @@ from crypto.keygen import generate_key_pair
 node_identifier = "test"
 from_address = "from_address"
 to_address = "to_address"
-amount = 1
+amount = 1.0
 
 class TestTransactionClass(unittest.TestCase):
 

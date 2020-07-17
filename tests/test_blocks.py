@@ -12,7 +12,7 @@ from Crypto.Hash import SHA256
 node_identifier = "test"
 from_address = "from_address"
 to_address = "to_address"
-amount = 1
+amount = 1.0
 transaction = Transaction(from_address, to_address, amount, node_identifier)
 b_hash = SHA256.new()
 b_hash.update("test".encode())

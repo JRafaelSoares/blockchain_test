@@ -30,8 +30,8 @@ class Transaction:
         # What type should from and to address be? How do we define public keys?
         # TODO - Add from and to address type checks
 
-        # What type we want amount to be? Probably not int
-        # TODO - Add amount type check
+        if not type(amount) is float:
+            raise Exception("Transaction amount must be a float value")
 
         if amount < 0:
             raise Exception("Transaction amount must be greater or equal than 0")
@@ -150,14 +150,14 @@ class Blockchain:
 
         # Constants
         self.difficulty = 2  # Determines how long it takes to calculate proof-of-work
-        self.miningReward = 100  # Reward if a new block is successfully mined
+        self.miningReward = 100.0  # Reward if a new block is successfully mined
         self.number_of_transactions = 3  # Number of transactions it waits to create a block
 
     def __repr__(self):
         return "class" + str(self.__class__)
 
     def calculate_gen_block(self, node_id):
-        gen_block = Block(datetime.now(), Transaction(None, " ", 0, node_id), 0)
+        gen_block = Block(datetime.now(), Transaction(None, " ", 0.0, node_id), 0)
         gen_block.set_hash(gen_block.calculate_hash())
         gen_block.previousHash = "0"
         return gen_block
