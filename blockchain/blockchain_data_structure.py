@@ -46,12 +46,10 @@ class Transaction:
             print("No signature is this transaction!")
             return False
 
-        h = SHA256.new()
-        h.update(self.transaction_content().encode())
-
         try:
-            verify_sig(h, self.signature, self.node_id)  # Throws error if signature is invalid
-        except Exception:
+            verify_sig(self.calculate_hash(), self.signature, self.node_id)  # Throws error if signature is invalid
+
+        except:
             print("Signature failed, integrity and/or signature value was not upheld")
             return False
 
@@ -86,9 +84,8 @@ class Block:
         if index < 0 or not isinstance(index, int):
             raise Exception("Index must be a positive integer greater or equal to 0")
 
-        try:
-            self.has_valid_transactions(transactions)
-        except:
+
+        if not self.has_valid_transactions(transactions):
             raise Exception("Invalid Transactions")
 
         # TODO - Add check for previous hash to be empty only for first block
@@ -120,13 +117,14 @@ class Block:
 
         trans: Transaction
         if isinstance(transactions, Transaction):  # If there is only one transaction
-            transactions.check_valid()
+            return transactions.check_valid()
 
         else:
             for trans in transactions:
-                trans.check_valid()  # Returns exception if not valid
+                if not trans.check_valid():
+                    return False
 
-        return True
+            return True
 
     def serialize(self):
         return json.dumps(self, sort_keys=True).encode('utf-8')

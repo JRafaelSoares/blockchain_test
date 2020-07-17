@@ -8,17 +8,18 @@ from crypto.keygen import generate_key_pair
 
 miner_address = "catarina-address"
 node_identifier = "test"
+generate_key_pair(node_identifier)
 host = '0.0.0.0'
-port = 5000
+port = 5002
 blockchain_address = '{}:{}'.format(host, port)
 from_address = "from_address"
 to_address = "to_address"
 amount = 1.0
+peer_node = "localhost:5100"
 
 
 class TestBlockchainClass(unittest.TestCase):
 
-    generate_key_pair(node_identifier)
 
     # ------------------------------------- #
     # --------- Constructor Tests --------- #
@@ -141,6 +142,49 @@ class TestBlockchainClass(unittest.TestCase):
         self.assertEqual(blockchain.get_balance(to_address), amount * blockchain.number_of_transactions * 2 - 1)
         self.assertEqual(blockchain.get_balance(miner_address), blockchain.miningReward)
 
+    # ------------------------------------- #
+    # ------- Chain Validity Tests -------- #
+    # ------------------------------------- #
+
+    def test_chain_validity_correct(self):
+        blockchain = Blockchain(miner_address, node_identifier, host, port)
+
+        for transactions in range(blockchain.number_of_transactions * 2):
+            blockchain.create_transaction(from_address, to_address, amount)
+
+        self.assertTrue(blockchain.is_chain_valid())
+
+    def test_chain_validity_invalid_transaction(self):
+        blockchain = Blockchain(miner_address, node_identifier, host, port)
+
+        for transactions in range(blockchain.number_of_transactions * 2):
+            blockchain.create_transaction(from_address, to_address, amount)
+
+        blockchain.get_latest_block().transactions[0].amount = -1
+        self.assertFalse(blockchain.is_chain_valid())
+
+    def test_chain_validity_invalid_block(self):
+        blockchain = Blockchain(miner_address, node_identifier, host, port)
+
+        for transactions in range(blockchain.number_of_transactions * 2):
+            blockchain.create_transaction(from_address, to_address, amount)
+
+        blockchain.get_latest_block().index = -1
+        self.assertFalse(blockchain.is_chain_valid())
+
+    # ------------------------------------- #
+    # --------- Peer Nodes Tests ---------- #
+    # ------------------------------------- #
+
+    def test_peer_node_register(self):
+        blockchain = Blockchain(miner_address, node_identifier, host, port)
+
+        blockchain.register_node(peer_node)
+        self.assertEqual(len(blockchain.peer_nodes), 1)
+        self.assertEqual(blockchain.peer_nodes.pop(), peer_node)
+
+    # TODO - Mock requests.post method to test obtain_peer_node method
+    # def test_peer_not_obtain(self):
 
 if __name__ == '__main__':
     unittest.main()

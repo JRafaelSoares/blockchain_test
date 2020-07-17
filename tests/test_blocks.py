@@ -10,19 +10,23 @@ from Crypto.Hash import SHA256
 # --------------------------------------- #
 
 node_identifier = "test"
+generate_key_pair(node_identifier)
 from_address = "from_address"
 to_address = "to_address"
 amount = 1.0
 difficulty = 2
 timestamp = datetime.now
 transaction = Transaction(from_address, to_address, amount, node_identifier)
+
+incorrect_transaction = Transaction(from_address, to_address, amount, node_identifier)
+incorrect_transaction.amount = -1.0
+
 b_hash = SHA256.new()
 b_hash.update("test".encode())
 previous_hash = b_hash.hexdigest()
 
 class TestBlockClass(unittest.TestCase):
 
-    generate_key_pair(node_identifier)
 
     # ------------------------------------- #
     # --------- Constructor Tests --------- #
@@ -51,6 +55,10 @@ class TestBlockClass(unittest.TestCase):
         with self.assertRaises(Exception):
             Block(timestamp, [transaction, None], 0)
 
+    def test_constructor_incorrect_transaction(self):
+        with self.assertRaises(Exception):
+            Block(timestamp, incorrect_transaction, 0)
+
     # --------------------------------------- #
     # ------------- Mining Tests ------------ #
     # --------------------------------------- #
@@ -59,6 +67,28 @@ class TestBlockClass(unittest.TestCase):
         block = Block(timestamp, transaction, 0)
         block.mine_block(difficulty)
         self.assertEqual(block.currentHash[0:difficulty], "".join((["0"] * difficulty)))
+
+    # --------------------------------------- #
+    # ------- Transaction Check Tests ------- #
+    # --------------------------------------- #
+
+    def test_transaction_check_correct_single(self):
+        block = Block(timestamp, transaction, 0)
+        self.assertTrue(block.has_valid_transactions(block.transactions))
+
+    def test_transaction_check_correct_list(self):
+        block = Block(timestamp, [transaction, transaction], 0)
+        self.assertTrue(block.has_valid_transactions(block.transactions))
+
+    def test_transaction_check_invalid_transaction(self):
+        block = Block(timestamp, transaction, 0)
+        block.transactions = incorrect_transaction
+        self.assertFalse(block.has_valid_transactions(block.transactions))
+
+    def test_transaction_check_invalid_transaction_list(self):
+        block = Block(timestamp, transaction,  0)
+        block.transactions = [transaction, incorrect_transaction]
+        self.assertFalse(block.has_valid_transactions(block.transactions))
 
     # --------------------------------------- #
     # ----------- Integrity Tests ----------- #

@@ -7,6 +7,7 @@ from crypto.keygen import generate_key_pair
 # --------------------------------------- #
 
 node_identifier = "test"
+generate_key_pair(node_identifier)
 from_address = "from_address"
 to_address = "to_address"
 amount = 1.0
@@ -14,7 +15,6 @@ amount = 1.0
 class TestTransactionClass(unittest.TestCase):
 
 
-    generate_key_pair(node_identifier)
 
     # ------------------------------------- #
     # --------- Constructor Tests --------- #
