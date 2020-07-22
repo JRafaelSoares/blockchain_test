@@ -57,7 +57,6 @@ def get_pending_transactions():
 def register_peer_node():
     node_address = request.get_json()["node_address"]
 
-
     response = {
         'message': 'Node added',
         'total_nodes': list(blockchain.peer_nodes),

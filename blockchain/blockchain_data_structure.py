@@ -266,9 +266,12 @@ class Blockchain:
 
             for address in response['total_nodes']:
                 # Add and register all peers
-                self.peer_nodes.add(address)
-                requests.post('http://{}/register/node'.format(address),
-                              json={'node_address': '{}'.format(self.address)})
+                try:
+                    requests.post('http://{}/register/node'.format(address),
+                                  json={'node_address': '{}'.format(self.address)})
+                    self.register_node(address)
+                except:
+                    continue
 
             print(self.peer_nodes)
 
