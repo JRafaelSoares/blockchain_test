@@ -27,7 +27,7 @@ class Transaction:
         if not node_id:
             raise Exception("Transaction must have an associated node id")
 
-        if from_address and len(from_address) != 64:
+        if from_address and (not isinstance(from_address, str) or len(from_address) != 64):
             raise Exception("From address must be a string of length 64 chars")
 
         if not isinstance(to_address, str) or len(to_address) != 64:

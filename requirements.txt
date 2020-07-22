@@ -2,4 +2,5 @@ flask
 pycryptodome
 jsonpickle
 requests
+Crypto
 setuptools~=49.1.0

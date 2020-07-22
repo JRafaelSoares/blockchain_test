@@ -3,9 +3,9 @@ from uuid import uuid4
 from datetime import datetime
 from flask import Flask
 from flask import request
+from Crypto.Hash import SHA256
 from blockchain.blockchain_data_structure import Blockchain
 from crypto.keygen import generate_key_pair
-from Crypto.Hash import SHA256
 import json
 import jsonpickle
 
@@ -57,6 +57,7 @@ def get_pending_transactions():
 def register_peer_node():
     node_address = request.get_json()["node_address"]
 
+
     response = {
         'message': 'Node added',
         'total_nodes': list(blockchain.peer_nodes),
@@ -82,8 +83,11 @@ def check_transaction_arguments(from_address, to_address, amount):
     if not to_address or not from_address:
         raise Exception("Transaction must have a from and to destination address")
 
-    # What type should from and to address be? How do we define public keys?
-    # TODO - Add from and to address type checks
+    if not isinstance(from_address, str) or len(from_address) != 64:
+        raise Exception("From address must be a string of length 64 chars")
+
+    if not isinstance(to_address, str) or len(to_address) != 64:
+        raise Exception("To address must be a string of length 64 chars")
 
     if not type(amount) is float:
         raise Exception("Transaction amount must be a float value")
