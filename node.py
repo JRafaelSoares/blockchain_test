@@ -5,6 +5,7 @@ from flask import Flask
 from flask import request
 from blockchain.blockchain_data_structure import Blockchain
 from crypto.keygen import generate_key_pair
+from Crypto.Hash import SHA256
 import json
 import jsonpickle
 
@@ -98,6 +99,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
     port = args.port
     host = '0.0.0.0'
-    blockchain = Blockchain("catarina-address", node_identifier, host, port)
+
+    hash_function = SHA256.new()
+    hash_function.update("catarina-address".encode())
+    miner_address = hash_function.hexdigest()
+
+    blockchain = Blockchain(miner_address, node_identifier, host, port)
     blockchain.obtain_peer_node()
     app.run(host=host, port=port)
