@@ -1,4 +1,5 @@
-from blockchain.blockchain_data_structure import Blockchain
+from blockchain.blockchain_data_structure import BlockchainInstance
+
 from Crypto.Hash import SHA256
 
 hash_function = SHA256.new()
@@ -12,7 +13,7 @@ address1 = hash_function.hexdigest()
 hash_function.update("address2".encode())
 address2 = hash_function.hexdigest()
 
-blockchain = Blockchain(miner_address, "test", '0.0.0.0', 5000)
+blockchain = BlockchainInstance(miner_address, "test", '0.0.0.0', 5000)
 
 print(blockchain)
 blockchain.create_transaction(address1, address2, 100.0)
